@@ -8,15 +8,24 @@ import { ref, uploadBytes } from "firebase/storage";
 import Button from "react-bootstrap/Button";
 
 function App() {
-  const [file, setfile] = useState();
+  const [file, setfile] = useState([]);
 
-  const handleupload = async (e) => {
+  let chossenfiles;
+
+  const handleupload = async (files) => {
     // e.preventDefault();
-    const path = `/images/${file.name}`;
-    const storageRef = ref(storage, path);
-    uploadBytes(storageRef, file).then((response) => {
-      console.log(response);
+    const uploaded = [...file];
+    files?.some((files) => {
+      console.log(files);
+      const path = `/images/${files.name}`;
+      console.log(path);
+      const storageRef = ref(storage, path);
+      uploadBytes(storageRef, files).then((response) => {
+        console.log(response);
+      });
+      uploaded.push(files);
     });
+    setfile(uploaded);
   };
 
   return (
@@ -26,8 +35,11 @@ function App() {
           <Form.Label>Default file input example</Form.Label>
           <Form.Control
             type="file"
+            multiple
             onChange={(e) => {
-              setfile(e.target.files[0]);
+              // setfile(e.target.files);
+              chossenfiles = Array.prototype.slice.call(e.target.files);
+              console.log(chossenfiles);
             }}
           />
         </Form.Group>
@@ -35,7 +47,7 @@ function App() {
       <div className="row">
         <Button
           onClick={() => {
-            handleupload();
+            handleupload(chossenfiles);
           }}
           variant="secondary"
         >
