@@ -9,6 +9,8 @@ import Button from "react-bootstrap/Button";
 
 function App() {
   const [file, setfile] = useState([]);
+  const [previewurl, setpreviewurl] = useState([]);
+  let previewimage = [];
 
   let chossenfiles;
 
@@ -16,12 +18,12 @@ function App() {
     // e.preventDefault();
     const uploaded = [...file];
     files?.some((files) => {
-      console.log(files);
+      // console.log(files);
       const path = `/images/${files.name}`;
-      console.log(path);
+      // console.log(path);
       const storageRef = ref(storage, path);
       uploadBytes(storageRef, files).then((response) => {
-        console.log(response);
+        // console.log(response);
       });
       uploaded.push(files);
     });
@@ -37,9 +39,16 @@ function App() {
             type="file"
             multiple
             onChange={(e) => {
-              // setfile(e.target.files);
-              chossenfiles = Array.prototype.slice.call(e.target.files);
-              console.log(chossenfiles);
+              if (e.target.files != null) {
+                // setfile(e.target.files);
+                chossenfiles = Array.prototype.slice.call(e.target.files);
+                chossenfiles.map((file) => {
+                  return previewimage.push(URL.createObjectURL(file));
+                });
+                setpreviewurl(previewimage);
+                // console.log(previewimage);
+                // console.log(chossenfiles);
+              }
             }}
           />
         </Form.Group>
@@ -53,6 +62,28 @@ function App() {
         >
           Upload
         </Button>
+        <div
+          className="row"
+          style={{
+            marginTop: "20px",
+          }}
+        >
+          {previewurl.map((e, i) => {
+            return (
+              <>
+                <img
+                  src={e}
+                  height="120px"
+                  // width="120px"
+                  style={{
+                    width: "120px",
+                    borderRadius: "10px",
+                  }}
+                ></img>
+              </>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
